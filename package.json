@@ -1,0 +1,15 @@
+{
+  "name": "my-package",
+  "devDependencies": {
+    "browserify": "latest",
+    "watchify": "latest"
+  },
+  "scripts": {
+    "watch-js": "watchify -t [ reactify --extension jsx ] ./public/js/main.js -o ./public/bundle.js -dv",
+    "watch-node": "nodemon server.js --ignore public/*"
+  },
+  "dependencies": {
+    "bookshelf": "^0.8.0",
+    "knex": "^0.8.3"
+  }
+}
