@@ -1,5 +1,4 @@
 var express = require('express');
-var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 //var passport = require('passport');
 var athleteController = require('./controllers/athlete');
@@ -17,7 +16,7 @@ var app = express();
 
 // Use the body-parser package in our application
 app.use(bodyParser.urlencoded({
-    extended: true
+    extended: true,
 }));
 
 app.use(express.static('public'));

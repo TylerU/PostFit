@@ -2,7 +2,8 @@
   "name": "my-package",
   "devDependencies": {
     "browserify": "latest",
-    "watchify": "latest"
+    "watchify": "latest",
+    "reactify": "latest"
   },
   "scripts": {
     "watch-js": "watchify -t [ reactify --extension jsx ] ./public/js/main.js -o ./public/bundle.js -dv",
@@ -10,6 +11,20 @@
   },
   "dependencies": {
     "bookshelf": "^0.8.0",
-    "knex": "^0.8.3"
+    "knex": "^0.8.3",
+    "express": "latest",
+    "underscore": "latest",
+    "moment": "latest",
+    "body-parser": "latest",
+    "mysql": "latest",
+    "bluebird": "latest",
+    "bcryptjs": "latest",
+    "jsonwebtoken": "latest",
+    "express-jwt": "latest",
+    "react": "latest",
+    "backbone": "latest",
+    "jquery-browserify": "latest",
+    "highcharts-browserify": "latest",
+    "jquery": "latest"
   }
 }
