@@ -111,7 +111,7 @@ router.use(function(err, req, res, next) {
 });
 
 
-// Register all our routes with /api
+// Register all our routers with /api
 app.use('/api', router);
 
 // Start the server

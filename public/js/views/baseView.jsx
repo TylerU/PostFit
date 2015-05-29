@@ -1,5 +1,8 @@
 var React = require('react');
 var Header = require('./header.jsx');
+var Router = require('react-router');
+var Link = Router.Link;
+var RouteHandler = Router.RouteHandler;
 
 var BaseView = React.createClass({
   render: function() {
@@ -7,7 +10,7 @@ var BaseView = React.createClass({
       <div id="base">
         <Header action={this.props.action}/>
         <div className="container">
-                {this.props.children}
+            <RouteHandler/>
         </div>
       </div>
     );

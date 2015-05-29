@@ -25,6 +25,8 @@
     "backbone": "latest",
     "jquery-browserify": "latest",
     "highcharts-browserify": "latest",
-    "jquery": "latest"
+    "jquery": "latest",
+    "react-bootstrap": "latest",
+    "react-router": "latest"
   }
 }

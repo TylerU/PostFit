@@ -6,7 +6,7 @@ var Home = React.createClass({
       <div className="jumbotron text-center">
         <h1>PostFit</h1>
         <p className="lead">Tracking high school athletics statistics like never before</p>
-        <p><a href="/#athletes" className="btn btn-large btn-success">Get Started</a></p>
+        <p><a href="/#login" className="btn btn-large btn-success">Get Started</a></p>
       </div>
     );
   }
