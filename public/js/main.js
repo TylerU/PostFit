@@ -100,7 +100,7 @@ if (Auth.isLoggedIn()) {
 
 // Start the router
 //Router.run(routes, Router.HistoryLocation, function(Handler, state) {
-Router.run(routes, function(Handler, state) {
+Router.run(routes, Router.HistoryLocation, function(Handler, state) {
     //fetchData(state.routes, state.params).then(function(data) {
         return React.render(<Handler />, document.getElementById(DOM_APP_EL_ID));
     //});

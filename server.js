@@ -19,7 +19,6 @@ app.use(bodyParser.urlencoded({
     extended: true,
 }));
 
-app.use(express.static('public'));
 
 
 // Create our Express router
@@ -113,6 +112,17 @@ router.use(function(err, req, res, next) {
 
 // Register all our routers with /api
 app.use('/api', router);
+
+app.use('/public', express.static('public'));
+app.use('/public', function(req, res, next) {
+    res.send(404); // If we get here then the request for a static file is invalid
+});
+
+app.get('/*', function(req, res) {
+    res.sendFile('index.html', { root: __dirname+'/public' });
+});
+
+
 
 // Start the server
 app.listen(3000);

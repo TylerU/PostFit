@@ -16,8 +16,11 @@ var Dashboard = require('../views/dashboard.jsx');
 var AuthService = require('../auth');
 var AthleteData = require('../views/athleteData.jsx');
 var TeamView = require('../views/teamView.jsx');
+var Navigation = Router.Navigation;
 
 var LoggedInRouter = React.createClass({
+    mixins: [Navigation],
+
     signOut: function() {
         AuthService.signOut();
         window.location.reload();
@@ -28,14 +31,14 @@ var LoggedInRouter = React.createClass({
             <div id="base">
                 <div className="navbar navbar-default">
                     <div className="container">
-                        <a className="navbar-brand" href="#">PostFit</a>
+                        <Link to='home' className="navbar-brand">Postfit</Link>
                         <ul className="nav navbar-nav navbar-right">
                             <li><a href="" onClick={this.signOut}>Sign Out</a></li>
                         </ul>
                     </div>
                 </div>
                 <div className="container">
-                    <RouteHandler />
+                    <RouteHandler/>
                 </div>
             </div>
         );

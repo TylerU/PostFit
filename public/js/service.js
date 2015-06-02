@@ -6,7 +6,7 @@ var Service = (function(){
     var athletesMemo = null;
     var statsMemo = {};
 
-    var route = './api/1/';
+    var route = '/api/1/';
 
     function getAthletes() {
         var dfd = new jQuery.Deferred();

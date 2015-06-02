@@ -2,20 +2,17 @@ var knex = require('./database').knex;
 var _ = require('underscore');
 var Promise = require('bluebird');
 
-var down = function(knex) {
-    return knex.schema
-        .dropTableIfExists('teammember')
-        .dropTableIfExists('teammembersversion')
-        .dropTableIfExists('teamstat')
-        .dropTableIfExists('stat')
-        .dropTableIfExists('stattype')
-        .dropTableIfExists('user')
-        .dropTableIfExists('athlete')
-        .dropTableIfExists('team')
-        .dropTableIfExists('school')
+var tables = ['teammember','teammembersversion','teamstat','stat','stattype','user','athlete','team','school'];
+
+var down = function() {
+    var curChain = knex.schema;
+    for(var i = 0; i < tables.length; i++) {
+        curChain = curChain.dropTableIfExists(tables[i]);
+    }
+    return curChain;
 };
 
-var up = function(knex) {
+var up = function() {
     return knex.schema.createTable('school', function (table) {
         table.increments();
         table.string('city');
@@ -79,79 +76,58 @@ var up = function(knex) {
     })
 };
 
-function populateData(knex, name) {
-    var arr = require('./demodata/' + name + 's');
+function addDemoData(name, arr) {
     return Promise.reduce(arr, function(total, cur) {
         return knex.table(name).insert(cur).then(function(){return 0;});
     }, 0);
 }
 
-var createSchools = function(knex) {
-    console.log("Creating schools");
-    return populateData(knex, 'school');
+
+var populate = function(hugeObj) {
+    var curObj = addDemoData(tables[tables.length-1], hugeObj[tables[tables.length-1]]);
+    for(var i = tables.length-2; i >= 0; i--) {
+        curObj = curObj.then(_.bind(addDemoData, this, tables[i], hugeObj[tables[i]]));
+    }
+    return curObj;
 };
 
-var createUsers = function(knex) {
-    console.log("Creating users");
-    return populateData(knex, 'user');
-};
+function createHugeObjFromSeparateFiles() {
+    var obj = {};
+    for(var i = 0; i < tables.length; i++) {
+        var arr = require('./demodata/' + tables[i] + 's');
+        obj[tables[i]] = arr;
+    }
+    return obj;
+}
 
-var createTeams = function(knex) {
-    console.log("Creating teams");
-    return populateData(knex, 'team');
-};
+function getDBAsJSON(tb) {
+    return knex.select().table(tb);
+}
 
-var createAthletes = function(knex) {
-    console.log("Creating athletes");
-    return populateData(knex, 'athlete');
-};
-
-var createStatTypes = function(knex) {
-    console.log("Creating stattypes");
-    return populateData(knex, 'stattype');
-};
-
-var createStats = function(knex) {
-    console.log("Creating stats");
-    return populateData(knex, 'stat');
-};
-
-var createTeamStats = function(knex) {
-    console.log("Creating team stats");
-    return populateData(knex, 'teamstat');
-};
-
-var createTeamMemberVersions = function(knex) {
-    console.log("Creating team member versions");
-    return populateData(knex, 'teammembersversion');
-};
-
-var createTeamMembers = function(knex) {
-    console.log("Creating team members");
-    return populateData(knex, 'teammember');
-};
-
-var populate = function(knex) {
-    return createSchools(knex)
-        .then(_.partial(createTeams, knex))
-        .then(_.partial(createUsers, knex))
-        .then(_.partial(createAthletes, knex))
-        .then(_.partial(createStatTypes, knex))
-        .then(_.partial(createStats, knex))
-        .then(_.partial(createTeamStats, knex))
-        .then(_.partial(createTeamMemberVersions, knex))
-        .then(_.partial(createTeamMembers, knex))
+var printJSONDB = function() {
+    var obj = {};
+    var all = [];
+    for(var i = 0; i < tables.length; i++) {
+        all.push((function(tb) {
+            return (getDBAsJSON(tb).then(function(arr) {
+                obj[tb] = arr;
+            }));
+        })(tables[i]));
+    }
+    return Promise.all(all).then(function() {
+        console.log('module.exports = ' + JSON.stringify(obj) );
+    });
 };
 
 var args = process.argv.slice(2);
 
 if(args[0] == "--all") {
-    down(knex).then(function() {
+    down().then(function() {
         console.log("Dropped all tables");
-        return up(knex);
+        return up();
     }).then(function() {
         console.log("Created all tables");
-        return populate(knex);
+        return populate(createHugeObjFromSeparateFiles());
     }).then(function() {
         console.log("Populated with demo data");
         process.exit(0);
@@ -164,6 +140,29 @@ if(args[0] == "--all") {
         console.log("Dropped all tables");
         process.exit(0);
     });
+} else if (args[0] == '--to-json') {
+  printJSONDB().then(function() {
+      process.exit(0);
+  }).catch(function(err) {
+      console.log('error', err);
+      process.exit(0);
+  });
+} else if (args[0] == '--from-json' && args.length == 2) {
+    var db = require(args[1]);
+    down().then(function(){
+        console.log("Dropped all tables");
+        return up();
+    }).then(function() {
+        console.log("Created all tables");
+        return populate(db);
+    }).then(function() {
+        console.log("Populated with demo data");
+        process.exit(0);
+    }).catch(function(err) {
+        console.log("Error", err);
+        process.exit(0);
+    });
+
 } else {
     console.log("No operations performed", "Try 'setup.js --all'");
     process.exit(0);

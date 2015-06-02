@@ -1,6 +1,3 @@
-
-
-
 var moment = require('moment'),
   React = require('react'),
   Service = require('../service.js'),
@@ -92,8 +89,6 @@ var AthleteData = React.createClass({
   },
 
   componentDidMount: function() {
-      console.log(this.props);
-
       Service.getAthlete(this.props.params.athleteId).then(function(res) {
       if (this.isMounted()) {
         this.setState({

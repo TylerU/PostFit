@@ -23,6 +23,7 @@ exports.postAthlete = function(req, res) {
 
 // TODO - which school to query for?
 exports.getAthletes = function(req, res) {
+    console.log('test');
     var schoolId = parseInt(req.params.school_id);
 
     Athlete.query({where: {school_id: schoolId}}).fetchAll().then(function(all) {
