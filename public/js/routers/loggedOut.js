@@ -31,7 +31,7 @@ LoggedOutRouter.getRoutes = function() {
         <Route name="app" path="/" handler={LoggedOutRouter}>
             <Route name="login" path="login" handler={LoginPage} />
             <DefaultRoute name="home" handler={HomePage} />
-            <NotFoundRoute handler={Content404}/>
+            <NotFoundRoute handler={LoginPage}/>
         </Route>
     );
 };

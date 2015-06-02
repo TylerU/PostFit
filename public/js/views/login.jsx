@@ -9,7 +9,7 @@ var Login = React.createClass({
         var password = React.findDOMNode(this.refs.password).value.trim();
         var checked = React.findDOMNode(this.refs.rememberMe).checked;
         AuthService.signIn(username, password, checked).then(function() {
-            window.location.href = '/';
+            window.location.reload();
         }.bind(this), function(err){
            console.log("Try again", err)
         });

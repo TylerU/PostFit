@@ -14,11 +14,13 @@ var Header = require('../views/header.jsx');
 var LoginPage = require('../views/login.jsx');
 var Dashboard = require('../views/dashboard.jsx');
 var AuthService = require('../auth');
+var AthleteData = require('../views/athleteData.jsx');
+var TeamView = require('../views/teamView.jsx');
 
 var LoggedInRouter = React.createClass({
     signOut: function() {
         AuthService.signOut();
-        window.location.href = '../';
+        window.location.reload();
     },
 
     render: function() {
@@ -44,6 +46,9 @@ LoggedInRouter.getRoutes = function() {
     return (
         <Route name="app" path="/" handler={LoggedInRouter}>
             <DefaultRoute name="home" handler={Dashboard} />
+            <Route name="athleteData" path="/athlete/:athleteId" handler={AthleteData} />
+            <Route name="teamData" path="/team/:teamId" handler={TeamView} />
+            <Redirect from="login" to="home" />
             <NotFoundRoute handler={Content404}/>
         </Route>
     );

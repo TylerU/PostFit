@@ -92,7 +92,9 @@ var AthleteData = React.createClass({
   },
 
   componentDidMount: function() {
-    Service.getAthlete(this.props.args[0]).then(function(res) {
+      console.log(this.props);
+
+      Service.getAthlete(this.props.params.athleteId).then(function(res) {
       if (this.isMounted()) {
         this.setState({
           athlete: res
@@ -100,7 +102,7 @@ var AthleteData = React.createClass({
       }
     }.bind(this));
 
-    Service.getStats(this.props.args[0]).then(function(res) {
+    Service.getStats(this.props.params.athleteId).then(function(res) {
       var newStat = null;
       if(_.keys(res).length > 0) {
         newStat = res[_.keys(res)[0]].metadata.name;
@@ -121,7 +123,6 @@ var AthleteData = React.createClass({
 
   render: function() {
     var a = this.state.athlete;
-    console.log(this.state.stats);
     var options = _.map(this.state.stats, function(elem) {
       var name = elem["metadata"].name;
       return (
@@ -146,10 +147,6 @@ var AthleteData = React.createClass({
               <tr>
                 <td>Age</td>
                 <td>{moment().diff(a.birthDate, 'years')}</td>
-              </tr>
-              <tr>
-                <td>Height</td>
-                <td>{a.height}</td>
               </tr>
               <tr>
                 <td>Team Participation</td>

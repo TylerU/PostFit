@@ -27,3 +27,5 @@ build/Release
 node_modules
 
 public/js/compiled-views
+public/bundle.js
+.idea/workspace.xml
