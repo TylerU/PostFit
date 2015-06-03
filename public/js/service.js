@@ -1,28 +1,23 @@
 var $ = require('jquery-browserify'),
     jQuery = require('jquery-browserify');
-var AuthService = require('./auth');
+var Auth = require('./auth');
+var _ = require('underscore');
 
 var Service = (function(){
-    var athletesMemo = null;
-    var statsMemo = {};
 
     var route = '/api/1/';
 
-    function getAthletes() {
-        var dfd = new jQuery.Deferred();
-
-        if(athletesMemo) {
-            dfd.resolve(athletesMemo);
-        }
-        else {
-            $.get(route + 'athletes').then(function(res) {
-                dfd.resolve(res);
-            }).fail(function(err) {
-                dfd.reject(err);
-            });
-        }
-
-        return dfd.promise();
+    function createAthlete(athlete) {
+        return $.ajax({
+            url: route + "athletes",
+            type:"POST",
+            headers: _.extend(Auth.getHeaders(), {
+                "Accept" : "application/json; charset=utf-8",
+                "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
+            }),
+            data: athlete,
+            dataType:"json"
+        });
     }
 
     function getAthlete(athleteId) {
@@ -49,7 +44,7 @@ var Service = (function(){
     }
 
     return {
-        getAthletes: getAthletes,
+        createAthlete: createAthlete,
         getAthlete: getAthlete,
         getStats: getStats,
         getTeams: getTeams,

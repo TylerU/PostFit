@@ -2,8 +2,8 @@ var _ = require('../lib/underscore');
 var User = require('../models/user');
 var Promise = require('bluebird');
 var jwt = require('jsonwebtoken');
-
-var secretToken = require('../config').secret;
+var config = require('../config');
+var secretToken = config.secret;
 
 // TODO - convert to asynchronous hashing
 
@@ -20,7 +20,7 @@ module.exports.login = function(req, res) {
             return res.sendStatus(401);
         }
 
-        var token = jwt.sign(user.toJSON(), secretToken, { expiresInMinutes: 1440 });
+        var token = jwt.sign(user.toJSON(), secretToken, { expiresInMinutes: config.tokenLifeMinutes });
 
         return res.json({
             success: true,

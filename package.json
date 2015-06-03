@@ -27,6 +27,7 @@
     "highcharts-browserify": "latest",
     "jquery": "latest",
     "react-bootstrap": "latest",
-    "react-router": "latest"
+    "react-router": "latest",
+    "checkit": "latest"
   }
 }

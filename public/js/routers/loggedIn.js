@@ -17,6 +17,7 @@ var AuthService = require('../auth');
 var AthleteData = require('../views/athleteData.jsx');
 var TeamView = require('../views/teamView.jsx');
 var Navigation = Router.Navigation;
+var CreateAthlete = require('../views/createAthlete.jsx');
 
 var LoggedInRouter = React.createClass({
     mixins: [Navigation],
@@ -51,6 +52,8 @@ LoggedInRouter.getRoutes = function() {
             <DefaultRoute name="home" handler={Dashboard} />
             <Route name="athleteData" path="/athlete/:athleteId" handler={AthleteData} />
             <Route name="teamData" path="/team/:teamId" handler={TeamView} />
+            <Route name="createAthlete" path="/createAthlete" handler={CreateAthlete} />
+
             <Redirect from="login" to="home" />
             <NotFoundRoute handler={Content404}/>
         </Route>

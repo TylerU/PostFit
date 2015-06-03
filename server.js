@@ -96,18 +96,18 @@ router.route('/login')
     .post(userController.login);
 
 // TODO better error handling
-router.use(function(err, req, res, next) {
-    var errorObj = {
-        success: false,
-        error: err
-    };
-
-    if(err.name == "UnauthorizedError") {
-        return res.status(401).json(errorObj)
-    }
-
-    res.status(500).json(errorObj);
-});
+//router.use(function(err, req, res, next) {
+//    var errorObj = {
+//        success: false,
+//        error: err
+//    };
+//
+//    if(err.name == "UnauthorizedError") {
+//        return res.status(401).json(errorObj)
+//    }
+//
+//    res.status(500).json(errorObj);
+//});
 
 
 // Register all our routers with /api

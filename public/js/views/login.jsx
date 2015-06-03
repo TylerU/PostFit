@@ -9,7 +9,6 @@ var Login = React.createClass({
     },
     handleSubmit: function(e) {
         e.preventDefault();
-        console.log("Logging in");
         this.setState({wrong: false});
         var username = React.findDOMNode(this.refs.username).value.trim();
         var password = React.findDOMNode(this.refs.password).value.trim();
@@ -17,7 +16,6 @@ var Login = React.createClass({
             window.location.reload();
         }.bind(this), function(err){
             this.setState({wrong: true});
-           console.log("Try again", err)
         }.bind(this));
     },
 

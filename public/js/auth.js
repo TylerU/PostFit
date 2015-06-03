@@ -1,5 +1,7 @@
 var $ = require('jquery-browserify');
 var Promise = require('bluebird');
+var moment = require('moment');
+var config = require('../../config');
 
 var AuthService = (function(){
     var route = './api/';
@@ -8,14 +10,27 @@ var AuthService = (function(){
     function attemptLocalStorageRetrieval() {
         if(localStorage.getItem('postfit-auth-token')) {
             authToken = localStorage.getItem('postfit-auth-token');
+            var start = moment(new Date(localStorage.getItem('postfit-auth-token-created')));
+            var now = moment();
+            var diff = moment.duration(now.diff(start)).asMinutes();
+            if(diff > config.tokenLifeMinutes) {
+                // Expired
+                authToken = null;
+                removeLocalStorage();
+            }
         }
     }
+
     function storeInLocalStorage(token) {
         localStorage.setItem('postfit-auth-token', token);
+        localStorage.setItem('postfit-auth-token-created', new Date());
     }
-    function removeLocalStorage(token) {
+
+    function removeLocalStorage() {
         localStorage.removeItem('postfit-auth-token');
+        localStorage.removeItem('postfit-auth-token-created');
     }
+
     return {
         signIn: function(username, password, remember) {
             remember = true;
