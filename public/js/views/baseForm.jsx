@@ -7,8 +7,7 @@ var _ = require('underscore');
 var t = require('tcomb-form');
 var Form = t.form.Form;
 
-var Login = React.createClass({
-    mixins: [Navigation],
+var BaseForm = React.createClass({
 
     getInitialState: function() {
         return {
@@ -18,7 +17,6 @@ var Login = React.createClass({
     },
 
     handleSubmit: function(e) {
-        console.log('test');
         e.preventDefault();
         var obj = this.refs.form.getValue();
 
@@ -53,40 +51,22 @@ var Login = React.createClass({
     },
 
     render: function () {
-        var yearOptions = {};
-        for(var i = 1990; i < 2030; i++) {
-            yearOptions[i] = i; //(<option key={i}>{i}</option>);
-        }
-
-        var Person = t.struct({
-            firstName: t.Str,
-            lastName: t.Str,
-            birthDate: t.Dat,
-            gender: t.enums({
-                Male: 'Male',
-                Female: 'Female'
-            }),
-            year: t.enums(yearOptions)
-        });
-
         var errors = [];
         if (this.state.wrong) {
             errors = _.chain(this.state.errors).values(this.state.errors).map(function(val) {
                 return (<div className="alert alert-danger" role="alert">{val}</div>);
             });
         }
-        var options = {
 
-        };
         return (
             <div>
                 {errors}
                 <Form
                     ref="form"
-                    type={Person}
-                    options={options}
+                    type={this.props.schema}
+                    options={this.props.options || {}}
                     />
-                <button onClick={this.handleSubmit} className="btn btn-success">Create Athlete</button>
+                <button onClick={this.handleSubmit} className="btn btn-success">{this.props.submitText}</button>
             </div>
         );
     }
