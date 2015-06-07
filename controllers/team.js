@@ -16,7 +16,7 @@ exports.postTeam = function(req, res) {
     team.school_id = schoolId;
 
     Team.forge(team).save().then(function(team) {
-        res.json({ message: 'Team created!', data: team.toJSON() });
+        res.json({ success: true, message: 'Team created!', data: team.toJSON() });
     }, function(err) {
         res.send(err);
     });
@@ -41,11 +41,36 @@ exports.getTeams = function(req, res) {
 exports.getTeam = function(req, res) {
     var teamId = req.params.team_id;
     // TODO - fetch team members and relevant stats.
-    new Team({id: teamId}).fetch().then(function(team) {
-        res.json(team);
+    var team = new Team({id: teamId});
+    var result = {
+        team: {}
+    };
+
+    var arr = [];
+
+    arr.push(team.fetch().then(function(team) {
+        result.team = team.toJSON();
+    }));
+
+    arr.push(team.getStatTypesIds().then(function(types){
+        result.stats = types;
+    }));
+
+    arr.push(team.getMembers().then(function(members){
+        result.members = members;
+    }));
+
+
+    Promise.all(arr).then(function() {
+        result.team.stats = result.stats;
+        result.team.members = result.members;
+        console.log(result.team);
+
+        res.send(result.team);
     }, function(err) {
         res.send(err);
-    });
+    })
+
 };
 
 // Create endpoint /api/teams/:team_id for PUT
@@ -53,7 +78,7 @@ exports.putTeam = function(req, res) {
     var teamId = req.params.team_id;
 
     // TODO: Validate
-    var newObj = _.pick(req.body, 'name', 'members', 'stats');
+    var newObj = _.pick(req.body, 'id', 'name', 'members', 'stats');
 
 
     var all = [];
@@ -68,7 +93,6 @@ exports.putTeam = function(req, res) {
 
     // Update Stats
     if(newObj.stats) {
-        newObj.stats = JSON.parse(newObj.stats);
         all.push(
             knex('teamstat').where('team_id', teamId).del().then(function(){
                 var statObjects = _.map(newObj.stats, function(stat) {
@@ -80,8 +104,6 @@ exports.putTeam = function(req, res) {
 
     // Update members
     if(newObj.members) {
-        newObj.members = JSON.parse(newObj.members);
-
         // Get the version of the team we care about
         all.push(
             knex.max('version').from('teammembersversion').where('team_id', teamId).then(function(maxVersion) {
@@ -106,7 +128,6 @@ exports.putTeam = function(req, res) {
                     start: now
                 }).then(function(newId) {
                     // Insert all members in the membership table
-
                     newId = newId[0];
                     var memberObjects = _.map(newObj.members, function(athlete) {
                         return {
@@ -124,7 +145,10 @@ exports.putTeam = function(req, res) {
 
     // Wait for everything to happen
     Promise.all(all).then(function() {
-        res.send(newObj);
+        res.send({
+            success: true,
+            data: newObj
+        });
     }, function(err) {
         res.send(err);
     });
@@ -136,31 +160,7 @@ function getSummaryOfStatValues(stat, values) {
     return sum / values.length;
 }
 
-function getTeamMembers(teamId, time) {
-    var idOfCorrectVersion = knex.max('id')
-        .from('teammembersversion')
-        .where('team_id', teamId)
-        .andWhere('start', '<=', time)
-        .andWhere(function() {
-            this.where('end', '>=', time).orWhere('end', '=', null)
-        });
 
-    var membersQuery = knex('athlete').join('teammember', 'athlete.id', 'teammember.athlete_id')
-        .whereIn('version_id', idOfCorrectVersion)
-        .select('*')
-        .then(function (athletes) {
-            return _.map(athletes, function(athlete) {
-                return _.omit(athlete, 'athlete_id', 'version_id');
-            });
-        });
-    return membersQuery;
-}
-
-function getTeamStats(teamId) {
-    var relevantStatIdsQuery = knex.select('stattype_id').from('teamstat').where('team_id', teamId);
-    var outerQuery = knex.select('*').from('stattype').whereIn('id', relevantStatIdsQuery);
-    return outerQuery.tap();
-}
 
 function getLatestStatValueAtTime(athlete, stat, upperBound) {
     return knex('stat')
@@ -176,14 +176,16 @@ exports.getTeamSummary = function(req, res) {
     var teamId = req.params.team_id;
     var finalObj = {};
 
-    var stats = getTeamStats(teamId);
+    var team = new Team({id: teamId});
+
+    var stats = team.getTeamStats();
     var allPromises = [];
 
     for(var i = 12; i >= 0; i--) {
 
         var ubound = moment().subtract(i, "months").toDate();
         (function(upperBound) {
-            var teamMembers = getTeamMembers(teamId, upperBound);
+            var teamMembers = team.getTeamMembers(upperBound);
 
             allPromises.push(teamMembers.then(function (athletes) {
                 return stats.then(function (allStats) {

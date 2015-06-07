@@ -76,12 +76,17 @@ exports.putAthlete = function(req, res) {
     var id = req.params.athlete_id;
 
     // TODO: Validate
-    var newObj = _.pick(req.body, 'firstName', 'lastName', 'year', 'birthDate', 'height', 'teams', 'gender', 'sharing');
+    var newObj = _.pick(req.body, 'firstName', 'lastName', 'year', 'birthDate', 'gender');
+    // Check for membership
     new Athlete({
         school_id: schoolId,
         id: id}).save(newObj).then(function(result) {
-            res.json({ message: 'updated', result: result });
+            res.json({ success: true, message: 'updated', data: result });
     }, function(err) {
         res.send(err);
-    })
+    });
+
+    if(req.body.teams) {
+        
+    }
 };

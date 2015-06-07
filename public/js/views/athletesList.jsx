@@ -1,5 +1,4 @@
 var React = require('react');
-var Service = require('../service.js');
 
 
 var AthletesList = React.createClass({
@@ -10,7 +9,8 @@ var AthletesList = React.createClass({
     },
 
     componentDidMount: function() {
-        Service.getAthletes().then(function(arr) {
+        this.Service = this.props.Service;
+        this.Service.getAthletes().then(function(arr) {
             if (this.isMounted()) {
                 this.setState({
                     athletes: arr

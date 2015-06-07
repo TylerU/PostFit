@@ -1,5 +1,4 @@
 var React = require('react');
-var Service = require('../service.js');
 var _ = require('underscore');
 var Navigation = require('react-router').Navigation;
 
@@ -27,11 +26,11 @@ var TeamView = React.createClass({
             return team.name == teamName;
         })[0].id;
 
-        this.context.router.transitionTo('teamData', {teamId: teamId});
+        this.context.router.transitionTo('teamData', {schoolId: this.props.params.schoolId, teamId: teamId});
     },
 
     loadData: function(){
-        Service.getTeamMemberData(this.getTeamId()).then(function(res) {
+        this.Service.getTeamMemberData(this.getTeamId()).then(function(res) {
             if (this.isMounted()) {
                 this.setState({
                     memberData: res
@@ -39,7 +38,7 @@ var TeamView = React.createClass({
             }
         }.bind(this));
 
-        Service.getTeamData(this.getTeamId()).then(function(res) {
+        this.Service.getTeamData(this.getTeamId()).then(function(res) {
             if (this.isMounted()) {
                 this.setState({
                     team: res
@@ -47,7 +46,7 @@ var TeamView = React.createClass({
             }
         }.bind(this));
 
-        Service.getTeams().then(function(res) {
+        this.Service.getTeams().then(function(res) {
             if (this.isMounted()) {
                 this.setState({
                     teams: res
@@ -61,10 +60,11 @@ var TeamView = React.createClass({
     },
 
     componentWillMount: function() {
+        this.Service = this.props.Service;
         this.loadData();
     },
     navigateToAthlete(athleteId) {
-      this.context.router.transitionTo('athleteData', {athleteId: athleteId});
+      this.context.router.transitionTo('athleteData', {schoolId: this.props.params.schoolId, athleteId: athleteId});
     },
     render: function() {
         var items = _.map(this.state.memberData.athletesData, function(athlete, i) {

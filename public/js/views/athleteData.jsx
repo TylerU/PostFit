@@ -1,11 +1,12 @@
 var moment = require('moment'),
   React = require('react'),
-  Service = require('../service.js'),
   _ = require('underscore'),
   $ = require('jquery-browserify'),
-  highcharts = require('highcharts-browserify');
+  Router = require('react-router'),
+    highcharts = require('highcharts-browserify');
 
 var AthleteData = React.createClass({
+    mixins: [Router.Navigation],
   getInitialState: function() {
     return {
       athlete: {},
@@ -89,7 +90,8 @@ var AthleteData = React.createClass({
   },
 
   componentDidMount: function() {
-      Service.getAthlete(this.props.params.athleteId).then(function(res) {
+        this.Service = this.props.Service;
+      this.Service.getAthlete(this.props.params.athleteId).then(function(res) {
       if (this.isMounted()) {
         this.setState({
           athlete: res
@@ -97,7 +99,7 @@ var AthleteData = React.createClass({
       }
     }.bind(this));
 
-    Service.getStats(this.props.params.athleteId).then(function(res) {
+      this.Service.getStatsForAthlete(this.props.params.athleteId).then(function(res) {
       var newStat = null;
       if(_.keys(res).length > 0) {
         newStat = res[_.keys(res)[0]].metadata.name;
