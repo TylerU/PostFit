@@ -9,7 +9,9 @@ var AthleteData = React.createClass({
     mixins: [Router.Navigation],
   getInitialState: function() {
     return {
-      athlete: {},
+      athlete: {
+          teams: []
+      },
       stats: {},
       selectedStat: null,
     }
@@ -147,19 +149,25 @@ var AthleteData = React.createClass({
               </tr>
               <tr>
                 <td>Team Participation</td>
-                <td>{a.teams}</td>
+                <td>{a.teams.map(function(team) {return team.name}).join(', ')}</td>
               </tr>
             </tbody>
           </table>
         </div>
         <div className="col-md-9">
-          <div className="type-dropdown">
-            <select className="form-control" value={this.state.selectedStat} onChange={this.changeHandler}>
-                  {options}
-            </select>
-          </div>
-          <div width="100%" className="graph-container">
-          </div>
+            {options.length == 0 ?
+                <div style={{"textAlign": "center"}}>
+                    <h4>No statistics for this Athlete</h4>
+                </div> :
+                <div>
+                    <div className="type-dropdown">
+                        <select className="form-control" value={this.state.selectedStat} onChange={this.changeHandler}>
+                            {options}
+                        </select>
+                    </div>
+                    <div width="100%" className="graph-container"></div>
+                </div>
+            }
         </div>
       </div>
     );

@@ -10,7 +10,6 @@ var User = bookshelf.Model.extend({
             return cryptoHelper.saltAndHash(this.get('password')).then(function(hashed) {
                 this.set('hashedPassword', hashed);
                 this.unset('password');
-                console.log(this.toJSON());
                 return bookshelf.Model.prototype.save.apply(this);
             }.bind(this));
         }

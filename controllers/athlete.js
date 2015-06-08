@@ -1,7 +1,9 @@
 // Load required packages
 var Athlete = require('../models/athlete');
-var _ = require('../lib/underscore');
+var _ = require('underscore');
 var Checkit = require('checkit');
+var Team = require('../models/team');
+var Promise = require('bluebird');
 
 // TODO - Athlete belongs to which school?
 exports.postAthlete = function(req, res) {
@@ -14,6 +16,7 @@ exports.postAthlete = function(req, res) {
     athlete.birthDate = Date.parse(req.body.birthDate);
     athlete.gender = req.body.gender;
     athlete.school_id = schoolId;
+
 
     var rules = new Checkit({
         firstName: 'required',
@@ -28,21 +31,35 @@ exports.postAthlete = function(req, res) {
 
     rules
         .run(athlete)
-        .then(function(resu){
+        .then(function() {
             athlete.birthDate = new Date(athlete.birthDate);
-            return Athlete.forge(athlete).save().then(function(athlete) {
-                res.json({ success: true, message: 'Athlete created!', data: athlete });
-            }, function(err) {
-                res.send(err);
-            });
+            return Athlete.forge(athlete).save();
+        }).then(function(createdAthlete){
+            createdAthlete = createdAthlete.toJSON();
+            if(req.body.teams) {
+                createdAthlete.teams = req.body.teams;
+
+                var all = _.map(req.body.teams, function(teamId) {
+                    return new Team({id: teamId}).addAthleteAndSave(createdAthlete.id);
+                });
+
+                return Promise.all(all).then(function() {
+                    return createdAthlete;
+                });
+            }
+            else {
+                return createdAthlete;
+            }
+        }).then(function(createdAthlete) {
+            res.json({success: true, data: createdAthlete});
+        }, function(error) {
+            res.json({success: false, errors: error});
         }).catch(Checkit.Error, function(err) {
             res.send({
                 success: false,
                 errors: err
             });
         });
-
-
 };
 
 // TODO - which school to query for?
@@ -59,14 +76,20 @@ exports.getAthletes = function(req, res) {
 // Create endpoint /api/athletes/:athlete_id for GET
 exports.getAthlete = function(req, res) {
     var schoolId = parseInt(req.params.school_id);
+    var result = {};
 
     new Athlete({
         school_id: schoolId,
-        id: req.params.athlete_id}).fetch().then(function(athlete) {
-        res.json(athlete);
-    }).catch(function(err) {
-        res.send(err);
-    });
+        id: req.params.athlete_id
+    }).fetch().then(function(athlete) {
+            result.athlete = athlete.toJSON();
+            return athlete.getTeams(true);
+        }).then(function(teams) {
+            result.athlete.teams = teams;
+            res.json(result.athlete);
+        }).catch(function(err) {
+            res.send({success: false, error: err});
+        });
 };
 
 // Create endpoint /api/athletes/:athlete_id for PUT
@@ -80,13 +103,30 @@ exports.putAthlete = function(req, res) {
     // Check for membership
     new Athlete({
         school_id: schoolId,
-        id: id}).save(newObj).then(function(result) {
-            res.json({ success: true, message: 'updated', data: result });
-    }, function(err) {
-        res.send(err);
-    });
+        id: id}).save(newObj).then(function(createdAthlete){
+            createdAthlete = createdAthlete.toJSON();
+            createdAthlete.teams = (req.body.teams || []).map(function(i) {return parseInt(i);});
 
-    if(req.body.teams) {
-        
-    }
+
+            var all = _.map(req.body.teams, function(teamId) {
+                return new Team({id: teamId}).addAthleteAndSave(createdAthlete.id);
+            });
+
+            all.push(new Athlete({id: createdAthlete.id}).getTeams().then(function(teams) {
+                var toRemove = _.difference(teams, createdAthlete.teams);
+                var allToRemove = _.map(toRemove, function(teamId) {
+                    return new Team({id: teamId}).removeAthleteAndSave(createdAthlete.id);
+                });
+                return Promise.all(allToRemove);
+            }));
+
+            return Promise.all(all).then(function() {
+                return createdAthlete;
+            });
+
+        }).then(function(createdAthlete) {
+            res.json({success: true, data: createdAthlete});
+        }, function(error) {
+            res.json({success: false, errors: error});
+        });
 };

@@ -30,9 +30,7 @@ var CreateAthlete = React.createClass({
                 setErrors(resultAthlete.errors);
             }
         }.bind(this), function(error) {
-            setErrors({
-                    err1: "an unknown error occurred"
-            });
+            console.log("Server Error: " + error);
         });
     },
 
@@ -47,6 +45,7 @@ var CreateAthlete = React.createClass({
         var athleteId = this.props.params.athleteId;
         if(athleteId) {
             this.Service.getAthlete(athleteId).then(function(athlete) {
+                athlete.teams = _.map(athlete.teams, 'id');
                 athlete.birthDate = moment(athlete.birthDate).format('YYYY-MM-DD');
                 this.setState({
                     athlete: athlete
@@ -58,7 +57,7 @@ var CreateAthlete = React.createClass({
     getInitialState: function() {
         return {
             teams: [],
-            athlete: {},
+            athlete: {}
         };
     },
 

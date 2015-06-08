@@ -34,22 +34,20 @@ exports.getTeams = function(req, res) {
     }, function(err) {
         res.send(err);
     });
-
 };
 
 // Create endpoint /api/teams/:team_id for GET
 exports.getTeam = function(req, res) {
     var teamId = req.params.team_id;
-    // TODO - fetch team members and relevant stats.
     var team = new Team({id: teamId});
+
     var result = {
         team: {}
     };
-
     var arr = [];
-
-    arr.push(team.fetch().then(function(team) {
-        result.team = team.toJSON();
+    arr.push(team.fetch().then(function(resTeam) {
+        result.team = resTeam.toJSON();
+    }, function(err){
     }));
 
     arr.push(team.getStatTypesIds().then(function(types){
@@ -60,16 +58,14 @@ exports.getTeam = function(req, res) {
         result.members = members;
     }));
 
-
     Promise.all(arr).then(function() {
         result.team.stats = result.stats;
         result.team.members = result.members;
-        console.log(result.team);
 
-        res.send(result.team);
+        res.json(result.team);
     }, function(err) {
         res.send(err);
-    })
+    });
 
 };
 
@@ -106,41 +102,8 @@ exports.putTeam = function(req, res) {
     if(newObj.members) {
         // Get the version of the team we care about
         all.push(
-            knex.max('version').from('teammembersversion').where('team_id', teamId).then(function(maxVersion) {
-                var maxVersion = _.values(maxVersion[0])[0];
-                var now = new Date();
-                var nestedOperations = [];
-
-                // Update the old version with end time
-                nestedOperations.push(
-                    knex('teammembersversion')
-                        .where({
-                            team_id: teamId,
-                            version: maxVersion
-                        })
-                        .update('end', now).then(_.noop));
-
-
-                // Create a new version of this team's membership
-                nestedOperations.push(knex('teammembersversion').insert({
-                    version: maxVersion + 1,
-                    team_id: teamId,
-                    start: now
-                }).then(function(newId) {
-                    // Insert all members in the membership table
-                    newId = newId[0];
-                    var memberObjects = _.map(newObj.members, function(athlete) {
-                        return {
-                            version_id: newId,
-                            athlete_id: athlete
-                        };
-                    });
-
-                    return knex('teammember').insert(memberObjects).then(_.noop);
-                }));
-
-                return Promise.all(nestedOperations);
-            }));
+            new Team({id: teamId}).setMembersAndSave(newObj.members)
+        );
     }
 
     // Wait for everything to happen
@@ -159,8 +122,6 @@ function getSummaryOfStatValues(stat, values) {
     var sum = _.reduce(values, function(memo, num){ return memo + (num || 0); }, 0);
     return sum / values.length;
 }
-
-
 
 function getLatestStatValueAtTime(athlete, stat, upperBound) {
     return knex('stat')
@@ -185,7 +146,7 @@ exports.getTeamSummary = function(req, res) {
 
         var ubound = moment().subtract(i, "months").toDate();
         (function(upperBound) {
-            var teamMembers = team.getTeamMembers(upperBound);
+            var teamMembers = team.getMembers(upperBound);
 
             allPromises.push(teamMembers.then(function (athletes) {
                 return stats.then(function (allStats) {

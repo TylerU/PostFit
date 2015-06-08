@@ -10,7 +10,8 @@ var _ = require('underscore');
 var jwt = require('express-jwt');
 var auth = require('./controllers/auth');
 
-
+var Team = require('./models/team');
+var knex = require('./database').knex;
 // Create our Express application
 var app = express();
 
@@ -121,8 +122,6 @@ app.use('/public', function(req, res, next) {
 app.get('/*', function(req, res) {
     res.sendFile('index.html', { root: __dirname+'/public' });
 });
-
-
 
 // Start the server
 app.listen(3000);

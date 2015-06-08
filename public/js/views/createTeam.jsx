@@ -15,7 +15,78 @@ var RadioGroup = FRC.RadioGroup;
 var Row = FRC.Row;
 var Select = FRC.Select;
 var Textarea = FRC.Textarea;
+var ComponentMixin = FRC.ComponentMixin;
+var Select = require("react-select");
 
+
+
+var AthleteListEditor = React.createClass({
+
+    // Add the Formsy Mixin
+    mixins: [Formsy.Mixin, ComponentMixin],
+
+    // setValue() will set the value of the component, which in
+    // turn will validate it and the rest of the form
+    changeValue: function (event) {
+        this.setValue(event.split('!|!').map(function(id) {
+            id = parseInt(id);
+            return _.findWhere(this.props.allAthletes, {
+               id: id
+            });
+        }.bind(this)));
+    },
+
+    render: function() {
+
+        var element = this.renderElement();
+
+        if (this.getLayout() === 'elementOnly' || this.props.type === 'hidden') {
+            return element;
+        }
+
+        var warningIcon = '';
+        if (this.showErrors()) {
+            warningIcon = (
+                <Icon symbol="remove" className="form-control-feedback" />
+            );
+        }
+
+        return (
+            <Row
+                label={this.props.label}
+                required={this.isRequired()}
+                hasErrors={this.showErrors()}
+                layout={this.getLayout()}
+                >
+                {element}
+                {warningIcon}
+                {this.renderHelp()}
+                {this.renderErrorMessage()}
+            </Row>
+        );
+    },
+
+    renderElement: function() {
+
+        var ops = this.props.allAthletes.map(function(athlete) {
+            return {
+                label: athlete.firstName + ' ' + athlete.lastName + ' (' + athlete.year + ')',
+                value: athlete.id
+            };
+        });
+
+        var cur = this.getValue().map(function(athlete) {
+            return {
+                label: athlete.firstName + ' ' + athlete.lastName + ' (' + athlete.year + ')',
+                value: athlete.id
+            };
+        });
+
+		return (
+            <Select multi={true} value={cur} placeholder="Add Team Members" options={ops} delimiter="!|!" onChange={this.changeValue} />
+		);
+	}
+});
 
 var CreateTeam = React.createClass({
     mixins: [Navigation],
@@ -23,7 +94,8 @@ var CreateTeam = React.createClass({
     getInitialState: function() {
         return {
             stats: [],
-            team: {}
+            team: {},
+            athletes: []
         }
     },
 
@@ -34,7 +106,11 @@ var CreateTeam = React.createClass({
                 stats: types
             });
         }.bind(this));
-
+        this.Service.getAthletes().then(function(athletes){
+            this.setState({
+                athletes: athletes
+            });
+        }.bind(this));
         if(this.props.params.teamId) {
             this.Service.getTeamData(this.props.params.teamId).then(function(team) {
                 this.setState({
@@ -46,6 +122,8 @@ var CreateTeam = React.createClass({
 
     submitForm: function(obj, reset, setErrors) {
         var operation = this.Service.createTeam;
+        obj.members = _.map(obj.members, 'id');
+
         if(this.props.params.teamId) {
             obj.id = this.state.team.id;
             operation = this.Service.updateTeam;
@@ -59,9 +137,7 @@ var CreateTeam = React.createClass({
                 setErrors(result.errors);
             }
         }.bind(this), function(error) {
-            setErrors({
-                err1: "an unknown error occurred"
-            });
+            console.log("An unknown error occurred: " + error)
         });
     },
 
@@ -107,7 +183,16 @@ var CreateTeam = React.createClass({
                             options={transformedStatTypes}
                             multiple
                             />
+                        <AthleteListEditor
+                            {...sharedProps}
+                            name="members"
+                            value={team.members || []}
+                            label="Team Members"
+                            help="Add a team member"
+                            allAthletes={this.state.athletes}
+                        />
                     </fieldset>
+
                     <Row layout={sharedProps.layout}>
                         <input className="btn btn-primary" formNoValidate={true} type="submit" defaultValue="Submit" />
                     </Row>
@@ -119,3 +204,4 @@ var CreateTeam = React.createClass({
 
 
 module.exports = CreateTeam;
+
