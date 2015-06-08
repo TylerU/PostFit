@@ -39,6 +39,10 @@ var Service = (function(){
     }
 
     return {
+        createStat: function(schoolId, stat) {
+            return postRequest(schoolId, "stats", stat);
+        },
+
         createAthlete: function(schoolId, athlete) {
             return postRequest(schoolId, "athletes", athlete);
         },

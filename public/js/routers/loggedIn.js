@@ -12,6 +12,8 @@ var NotFoundRoute = Router.NotFoundRoute;
 var Redirect = Router.Redirect;
 var Header = require('../views/header.jsx');
 var LoginPage = require('../views/login.jsx');
+var PostStat = require('../views/createStat.jsx');
+
 var Dashboard = require('../views/dashboard.jsx');
 var AuthService = require('../auth');
 var AthleteData = require('../views/athleteData.jsx');
@@ -75,6 +77,8 @@ LoggedInRouter.getRoutes = function() {
                 <Route name="createTeam" path="editTeam" handler={CreateTeam} />
                 <Route name="editAthlete" path="editAthlete/:athleteId" handler={CreateAthlete} />
                 <Route name="editTeam" path="editTeam/:teamId" handler={CreateTeam} />
+                <Route name="postStat" path="postStat" handler={PostStat} />
+
             </Route>
             <Redirect from="login" to="home" />
             <NotFoundRoute handler={Content404}/>

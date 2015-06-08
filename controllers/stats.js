@@ -63,11 +63,12 @@ var addStat = Promise.method(function(schoolId, obj) {
     var stat = {};
 
     // Set the stat properties that came from the POST data
-    stat.stattype_id = parseInt(obj.typeId);
+    stat.stattype_id = parseInt(obj.stattype_id);
     stat.value = obj.value;
     stat.time = new Date(obj.time);
-    stat.athlete_id = parseInt(obj.athleteId);
+    stat.athlete_id = parseInt(obj.athlete_id);
     stat.school_id = schoolId;
+    console.log(stat);
 
     // Save the stat and check for errors
     var typePromise = new StatType({id: stat.stattype_id}).fetch().tap();
@@ -98,9 +99,9 @@ var addStat = Promise.method(function(schoolId, obj) {
 exports.postStat = function (req, res) {
     var schoolId = parseInt(req.params.school_id);
     addStat(schoolId, req.body).then(function (result) {
-        res.json({message: 'Stat added to the database!', data: result});
+        res.json({success: true, data: result});
     }, function(err){
-        res.send(err);
+        res.send({success: false, errors: err});
     });
 };
 
