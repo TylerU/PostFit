@@ -13,6 +13,12 @@ module.exports = [
         god: true,
     },
     {
+        username: 'Zach',
+        hashedPassword: '$2a$10$epeBd9OK04COVOpTuBgY3eFB7cQEH.Ff8ixFIxB5lWcq4zXMJTIVq', //test
+        school_id: 1,
+        god: true,
+    },
+    {
         username: 'Director1',
         hashedPassword: '$2a$10$epeBd9OK04COVOpTuBgY3eFB7cQEH.Ff8ixFIxB5lWcq4zXMJTIVq', //test
         school_id: 1,

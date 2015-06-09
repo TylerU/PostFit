@@ -6,6 +6,7 @@ module.exports = [
         converter: "no-op",
         summaryType: "latest",
         school_id: 1,
+        id: 1
     },
     {
         type: "Integer",
@@ -13,6 +14,7 @@ module.exports = [
         name: "Dead Lift",
         converter: "no-op",
         summaryType: "latest",
-        school_id: 1
+        school_id: 1,
+        id: 2
     },
 ];
