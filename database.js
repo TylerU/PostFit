@@ -1,13 +1,8 @@
 
 var knex = require('knex')({
     client: 'mysql',
-    connection: {
-        host     : '127.0.0.1',
-        user     : 'root',
-        password : '',
-        database : 'postfit',
-        charset  : 'utf8'
-    }});
+    connection: process.env.CLEARDB_DATABASE_URL
+});
 
 var bookshelf = require('bookshelf')(knex);
 
