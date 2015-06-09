@@ -39,6 +39,9 @@ var Service = (function(){
     }
 
     return {
+        getUser: function() {
+            return $.ajax(route + 'user', {headers: Auth.getHeaders()});
+        },
         createStat: function(schoolId, stat) {
             return postRequest(schoolId, "stats", stat);
         },

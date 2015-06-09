@@ -1,6 +1,8 @@
 var React = require('react');
 var _ = require('underscore');
-var Navigation = require('react-router').Navigation;
+var Router = require('react-router');
+var Navigation = Router.Navigation;
+var Link = Router.Link;
 
 var TeamView = React.createClass({
     mixins: [Navigation],
@@ -110,9 +112,12 @@ var TeamView = React.createClass({
 
         return (
             <div className="">
-                <select className="form-control team-name-select" value={this.state.team.name}  onChange={this.sportChangeHandler}>
-                    {teamOptions}
-                </select>
+                <div>
+                    <select className="form-control team-name-select" value={this.state.team.name}  onChange={this.sportChangeHandler}>
+                        {teamOptions}
+                    </select>
+                </div>
+                <br />
                 <table className="table table-hover table-condensed">
                     <thead>
                     <tr>
@@ -126,6 +131,9 @@ var TeamView = React.createClass({
                     </tbody>
 
                 </table>
+
+                <br />
+                <Link to="editTeam" params={this.props.params}>Edit this team</Link>
             </div>
         );
     }

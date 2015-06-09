@@ -28,6 +28,9 @@ var secret = require('./config').secret;
 
 router.use(jwt({ secret: secret}).unless({path: ['/api/login']}));
 
+router.route('/user')
+    .get(auth.atLeastAthlete, auth.getUser);
+
 router.route('/:school_id/stats/:athlete_id')
     // Get stats summary for a given athlete
     .get(auth.atLeastAthlete, statController.getStats);

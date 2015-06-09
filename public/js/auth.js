@@ -34,7 +34,7 @@ var AuthService = (function(){
     return {
         signIn: function(username, password, remember) {
             remember = true;
-            return Promise.resolve($.post('./api/login', {
+            return Promise.resolve($.post('/api/login', {
                 username: username,
                 password: password
             })).then(function(response) {

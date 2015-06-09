@@ -128,7 +128,7 @@ var CreateTeam = React.createClass({
                     </fieldset>
 
                     <Row layout={sharedProps.layout}>
-                        <input className="btn btn-primary" formNoValidate={true} type="submit" defaultValue="Submit" />
+                        <input className="btn btn-primary" formNoValidate={true} type="submit" defaultValue="Save" />
                     </Row>
                 </Formsy.Form>
             </div>

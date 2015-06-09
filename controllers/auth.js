@@ -1,4 +1,5 @@
 var Team = require('../models/team');
+var _ = require('underscore');
 
 module.exports.atLeastDirector = function(req, res, next) {
     var schoolId = req.params.school_id;
@@ -85,4 +86,13 @@ module.exports.teamIsAccessible = function(req, res, next) {
     }, function(err) {
         return next(err);
     });
+};
+
+module.exports.getUser = function(req, res) {
+    if(req.user) {
+        res.send(_.pick(req.user, 'school_id', 'role', 'god'))
+    }
+    else {
+        res.send(null);
+    }
 };
