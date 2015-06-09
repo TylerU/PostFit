@@ -28,6 +28,9 @@
     "jquery": "latest",
     "react-bootstrap": "latest",
     "react-router": "latest",
-    "checkit": "latest"
+    "checkit": "latest",
+    "formsy-react": "latest",
+    "formsy-react-components": "latest",
+    "react-select": "latest"
   }
 }
