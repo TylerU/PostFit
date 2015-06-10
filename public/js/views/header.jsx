@@ -7,9 +7,7 @@ var Header = React.createClass({
       <div className="navbar navbar-default">
         <div className="container">
           <Link className="navbar-brand" to="home">PostFit</Link>
-          <ul className="nav navbar-nav navbar-right">
-              <li><Link to="login">Login</Link></li>
-          </ul>
+          <button type="button" onClick={this.signOut} className="btn btn-default navbar-btn navbar-right"><Link to="login">Login</Link></button>
         </div>
       </div>
     );

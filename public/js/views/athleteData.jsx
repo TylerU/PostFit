@@ -19,8 +19,13 @@ var AthleteData = React.createClass({
     },
 
     changeHandler: function(e) {
+        var name = e.target.value;
+        var id = _.filter(this.state.stats, function(elem) {
+          return elem.metadata.name === name;
+        })[0].metadata.id;
+
         this.setState({
-            selectedStat: e.target.value
+            selectedStat: id
         });
     },
 
@@ -29,7 +34,7 @@ var AthleteData = React.createClass({
 
         var metadata = null;
         var dataStart = _.find(this.state.stats, function(key) {
-            return (key.metadata.name == this.state.selectedStat);
+            return (key.metadata.id == this.state.selectedStat);
         }.bind(this));
 
         if(dataStart) {
@@ -43,6 +48,7 @@ var AthleteData = React.createClass({
         var dataStart = dataStart.map(function(elem) {
             return [moment(elem.time).utc().valueOf(), elem.value];
         });
+        dataStart = _.sortBy(dataStart, '0');
 
         $('.graph-container').highcharts({
             chart: {
@@ -105,7 +111,7 @@ var AthleteData = React.createClass({
         this.Service.getStatsForAthlete(this.props.params.athleteId).then(function(res) {
             var newStat = null;
             if(_.keys(res).length > 0) {
-                newStat = res[_.keys(res)[0]].metadata.name;
+                newStat = res[_.keys(res)[0]].metadata.id;
             }
 
             if (this.isMounted()) {
@@ -126,7 +132,7 @@ var AthleteData = React.createClass({
         var options = _.map(this.state.stats, function(elem) {
             var name = elem["metadata"].name;
             return (
-                <option key={name}>{name}</option>
+                <option key={elem["metadata"].id}>{name}</option>
             );
         });
 
@@ -144,10 +150,11 @@ var AthleteData = React.createClass({
                             <td>Year</td>
                             <td>{a.year}</td>
                         </tr>
+                        {a.birthDate ? (
                         <tr>
                             <td>Age</td>
                             <td>{moment().diff(a.birthDate, 'years')}</td>
-                        </tr>
+                        </tr>) : ''}
                         <tr>
                             <td>Team Participation</td>
                             <td>{a.teams.map(function(team) {return team.name}).join(', ')}</td>
@@ -173,6 +180,12 @@ var AthleteData = React.createClass({
                             <div width="100%" className="graph-container"></div>
                         </div>
                     }
+                    <div><Link to="postStat" params={{
+                      schoolId: this.props.params.schoolId
+                    }} query={{
+                      athleteId: this.props.params.athleteId,
+                      statTypeId: this.state.selectedStat
+                    }}>Post new stat for this athlete</Link></div>
                 </div>
             </div>
         );

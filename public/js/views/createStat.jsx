@@ -23,12 +23,14 @@ var CreateAthlete = React.createClass({
         delete obj.athlete;
         this.Service.createStat(obj).then(function(res) {
             if(res.success) {
-                reset({
-                    stattype_id: obj.stattype_id,
-                    time: obj.time
-                });
+              var newObj ={
+                stattype_id: obj.stattype_id,
+                time: obj.time
+              };
+              if(this.props.query.athleteId) newObj.athlete = oldAthlete;
+                reset(newObj);
             }
-        })
+        }.bind(this));
     },
 
     componentWillMount: function() {
@@ -50,12 +52,11 @@ var CreateAthlete = React.createClass({
     getInitialState: function() {
         return {
             statTypes: [],
-            athletes: []
+            athletes: [],
         };
     },
 
     render: function () {
-
 
         var statTypes = _.map(this.state.statTypes, function(type) {
             return {
@@ -75,7 +76,12 @@ var CreateAthlete = React.createClass({
             validatePristine: false
         };
 
-        var athlete = this.state.athlete;
+      var selectedAthlete = null;
+        if(this.props.query.athleteId) {
+          selectedAthlete = _.find(this.state.athletes, function (athlete) {
+            return athlete.id == this.props.query.athleteId;
+          }.bind(this));
+        }
 
         return (
             <div className="row">
@@ -87,7 +93,7 @@ var CreateAthlete = React.createClass({
                             {...sharedProps}
                             name="athlete"
                             label="Athlete"
-                            value={[]}
+                            value={selectedAthlete ? [selectedAthlete] : []}
                             //help="Selec"
                             allAthletes={this.state.athletes}
                             required
@@ -113,7 +119,7 @@ var CreateAthlete = React.createClass({
                         <Select
                             {...sharedProps}
                             name="stattype_id"
-                            value={""}
+                            value={this.props.query.statTypeId || ""}
                             label="Stat Type"
                             options={statTypes}
                             required

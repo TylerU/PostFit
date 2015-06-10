@@ -32,17 +32,34 @@ var LoggedInRouter = React.createClass({
         window.location.reload();
     },
 
+  /*
+   <form className="navbar-form navbar-right">
+   <div className="form-group">
+   <input type="text" className="form-control" placeholder="Search" />
+   </div>
+   </form>
+   */
     render: function() {
         return (
             <div id="base">
-                <div className="navbar navbar-default">
-                    <div className="container">
-                        <Link to='home' className="navbar-brand">Postfit</Link>
-                        <ul className="nav navbar-nav navbar-right">
-                            <li><a href="" onClick={this.signOut}>Sign Out</a></li>
-                        </ul>
-                    </div>
+              <nav className="navbar navbar-default">
+                <div className="container">
+                  <div className="navbar-header">
+                    <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-3">
+                      <span className="sr-only">Toggle navigation</span>
+                      <span className="icon-bar"></span>
+                      <span className="icon-bar"></span>
+                      <span className="icon-bar"></span>
+                    </button>
+                    <Link className="navbar-brand" to="home">PostFit</Link>
+                  </div>
+
+                  <div className="collapse navbar-collapse" id="navbar-collapse-3">
+                    <button type="button" onClick={this.signOut} className="hidden-xs btn btn-default navbar-btn navbar-right">Sign Out</button>
+                    <button type="button" onClick={this.signOut} className="visible-xs btn btn-default navbar-btn navbar-right">Sign Out</button>
+                  </div>
                 </div>
+              </nav>
                 <div className="container">
                     <RouteHandler/>
                 </div>

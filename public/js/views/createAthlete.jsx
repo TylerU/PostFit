@@ -133,7 +133,6 @@ var CreateAthlete = React.createClass({
                             label="Birth Date"
                             type="date"
                             placeholder="Enter the athlete's date of birth"
-                            required
                             />
                         <Select
                             {...sharedProps}

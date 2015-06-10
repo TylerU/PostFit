@@ -13,7 +13,7 @@ exports.postAthlete = function(req, res) {
     athlete.firstName = req.body.firstName;
     athlete.lastName = req.body.lastName;
     athlete.year = req.body.year;
-    athlete.birthDate = Date.parse(req.body.birthDate);
+    athlete.birthDate = req.body.birthDate ? Date.parse(req.body.birthDate) : null;
     athlete.gender = req.body.gender;
     athlete.school_id = schoolId;
 
@@ -22,7 +22,7 @@ exports.postAthlete = function(req, res) {
         firstName: 'required',
         lastName: 'required',
         year: ['required', 'natural'],
-        birthDate: ['required', {
+        birthDate: [{
             rule: 'natural',
             message: 'The birthDate must be a valid Date.'
         }],
@@ -32,7 +32,11 @@ exports.postAthlete = function(req, res) {
     rules
         .run(athlete)
         .then(function() {
-            athlete.birthDate = new Date(athlete.birthDate);
+            if(athlete.birthDate)
+              athlete.birthDate = new Date(athlete.birthDate);
+            else
+              delete athlete.birthDate;
+
             return Athlete.forge(athlete).save();
         }).then(function(createdAthlete){
             createdAthlete = createdAthlete.toJSON();
