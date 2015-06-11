@@ -35,6 +35,10 @@ var AthleteListEditor = React.createClass({
     // setValue() will set the value of the component, which in
     // turn will validate it and the rest of the form
     changeValue: function (event) {
+      if(event.trim().length == 0) {
+        this.setValue([]);
+        return;
+      }
         this.setValue(event.split('!|!').map(function(id) {
             id = parseInt(id);
             return _.findWhere(this.props.allAthletes, {

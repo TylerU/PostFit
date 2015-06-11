@@ -118,6 +118,19 @@ var Team = bookshelf.Model.extend({
             }
             return true;
         }.bind(this));
+    },
+
+    setStatsAndSave: function(statsArr) {
+      var teamId = this.get('id');
+      return knex('teamstat').where('team_id', teamId).del().then(function(){
+        var statObjects = _.map(statsArr, function(stat) {
+          return {team_id: teamId, stattype_id: stat};
+        });
+        if(statObjects.length > 0)
+          return knex('teamstat').insert(statObjects).then(_.noop);
+        else
+          return '';
+      })
     }
 });
 

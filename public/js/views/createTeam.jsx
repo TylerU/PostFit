@@ -56,7 +56,6 @@ var CreateTeam = React.createClass({
     submitForm: function(obj, reset, setErrors) {
         var operation = this.Service.createTeam;
         obj.members = _.map(obj.members, 'id');
-
         if(this.props.params.teamId) {
             obj.id = this.state.team.id;
             operation = this.Service.updateTeam;
