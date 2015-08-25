@@ -6,7 +6,7 @@
     "reactify": "latest"
   },
   "scripts": {
-    "watch-js": "watchify -t [ reactify --extension jsx ] ./public/js/main.js -o ./public/bundle.js -dv",
+    "watch-js": "watchify -t [ reactify --extension jsx --es6 ] ./public/js/main.js -o ./public/bundle.js -dv",
     "watch-node": "nodemon server.js --ignore public/*"
   },
   "dependencies": {

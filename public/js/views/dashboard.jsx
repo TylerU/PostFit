@@ -50,6 +50,9 @@ var Dashboard = React.createClass({
                             <div>
                                 <Link to="postStat" params={{schoolId: this.state.schoolId}}>Post Stat</Link>
                             </div>
+                            <div>
+                              <Link to="postStats" params={{schoolId: this.state.schoolId}}>Post Stats Bulk</Link>
+                            </div>
                         </div> :
                         <div></div>}
                 </div>

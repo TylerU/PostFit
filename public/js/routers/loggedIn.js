@@ -13,7 +13,7 @@ var Redirect = Router.Redirect;
 var Header = require('../views/header.jsx');
 var LoginPage = require('../views/login.jsx');
 var PostStat = require('../views/createStat.jsx');
-
+var PostStats = require('../views/createStats.jsx');
 var Dashboard = require('../views/dashboard.jsx');
 var AuthService = require('../auth');
 var AthleteData = require('../views/athleteData.jsx');
@@ -95,6 +95,7 @@ LoggedInRouter.getRoutes = function() {
                 <Route name="editAthlete" path="editAthlete/:athleteId" handler={CreateAthlete} />
                 <Route name="editTeam" path="editTeam/:teamId" handler={CreateTeam} />
                 <Route name="postStat" path="postStat" handler={PostStat} />
+                <Route name="postStats" path="postStats" handler={PostStats} />
 
             </Route>
             <Redirect from="login" to="home" />
