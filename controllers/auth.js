@@ -14,7 +14,7 @@ module.exports.atLeastDirector = function(req, res, next) {
         });
     }
 
-    if(req.user.role == 'Director') {
+    if(req.user.role == 'director') {
         return next();
     }
     return next({
@@ -48,7 +48,7 @@ module.exports.atLeastCoach = function(req, res, next) {
         });
     }
 
-    if(req.user.role == 'Director' || req.user.role == 'Coach') {
+    if(req.user.role == 'director' || req.user.role == 'coach') {
         return next();
     }
 

@@ -72,10 +72,6 @@ var Service = (function(){
     },
 
     getStatTypes: function(schoolId) {
-      if (statTypes) {
-        return statTypes;
-      }
-
       var result = getRequest(schoolId, 'statTypes');
 
       result.then(function(res) {
@@ -90,10 +86,6 @@ var Service = (function(){
     },
 
     getAthletes: function(schoolId) {
-      if (athletes) {
-        return athletes;
-      }
-
       var result = getRequest(schoolId, 'athletes/');
 
       result.then(function(res) {
@@ -108,10 +100,6 @@ var Service = (function(){
     },
 
     getTeams: function(schoolId) {
-      if (teams) {
-        return teams;
-      }
-
       var result = getRequest(schoolId, 'teams');
 
       result.then(function(res) {
